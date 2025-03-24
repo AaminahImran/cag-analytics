@@ -1,5 +1,5 @@
 def main():
-    print("Hello from cag-analytics!")
+    print("How was your day?")
 
 
 if __name__ == "__main__":
