@@ -7,13 +7,13 @@ import re
 import random
 import sys
 import os
+import datetime
 
 try:
     from weather_service import get_weather_response
     WEATHER_SERVICE_AVAILABLE = True
 except ImportError:
     WEATHER_SERVICE_AVAILABLE = False
-    
 
 
 class SimpleBot:
@@ -26,9 +26,12 @@ class SimpleBot:
             (r'bye|goodbye|exit|quit', ['Goodbye!', 'See you later!', 'Bye!']),
             (r'help', ['I can chat about simple topics. Try saying hello or asking about my name.']),
             (r'thank you|thanks', ['You\'re welcome!', 'No problem!', 'Anytime!']),
-            (r'weather in ([\w\s]+)', ['I\'ll check the weather in {0} for you.']),
-            (r'weather', ['I can check the weather for you. Try asking "weather in [city name]".']),
-            (r'time', ['I don\'t have access to the current time.']),
+            (r'weather in ([\w\s,]+)', ['I\'ll check the weather in {0} for you.']),
+            (r'weather forecast for ([\w\s,]+)', ['Let me get the weather forecast for {0}.']),
+            (r'weather', ['I can check the weather for you. Try asking "weather in [city name]" or "weather forecast for [city name]".']),
+            (r'temperature in ([\w\s,]+)', ['Let me check the temperature in {0} for you.']),
+            (r'time', [lambda: f"The current time is {datetime.datetime.now().strftime('%H:%M:%S')}."]),
+            (r'date', [lambda: f"Today is {datetime.datetime.now().strftime('%A, %B %d, %Y')}."]),
             (r'who (are|made) you', ['I\'m a simple chatbot created as a demo.']),
         ]
         
@@ -48,23 +51,38 @@ class SimpleBot:
         if user_input in ['exit', 'quit', 'bye', 'goodbye']:
             return random.choice(self.patterns[3][1])
         
-        # Check for weather request
-        weather_match = re.search(r'weather in ([\w\s]+)', user_input)
-        if weather_match and WEATHER_SERVICE_AVAILABLE:
-            city = weather_match.group(1).strip()
-            try:
-                return get_weather_response(city)
-            except Exception as e:
-                return f"Sorry, I had trouble getting the weather information: {str(e)}"
+        # Check for weather-related requests
+        weather_patterns = [
+            (r'weather in ([\w\s,]+)', 'weather'),
+            (r'weather forecast for ([\w\s,]+)', 'weather'),
+            (r'temperature in ([\w\s,]+)', 'weather')
+        ]
+        
+        for pattern, req_type in weather_patterns:
+            match = re.search(pattern, user_input)
+            if match and WEATHER_SERVICE_AVAILABLE:
+                city = match.group(1).strip()
+                try:
+                    return get_weather_response(city)
+                except Exception as e:
+                    return f"Sorry, I had trouble getting the weather information: {str(e)}"
         
         # Check each pattern for a match
         for pattern, responses in self.patterns:
             match = re.search(pattern, user_input)
             if match:
-                response = random.choice(responses)
+                response_template = random.choice(responses)
+                
+                # Handle function responses (for dynamic content like time)
+                if callable(response_template):
+                    return response_template()
+                
                 # Format the response with any captured groups
-                if '{0}' in response and match.groups():
-                    response = response.format(*match.groups())
+                if '{0}' in response_template and match.groups():
+                    response = response_template.format(*match.groups())
+                else:
+                    response = response_template
+                    
                 return response
         
         # If no pattern matches, return a default response
@@ -73,6 +91,18 @@ class SimpleBot:
     def chat(self):
         """Run the chatbot conversation loop."""
         print("SimpleBot: Hello! I'm a simple chatbot. Type 'exit' or 'quit' to end our conversation.")
+        
+        # Display available features
+        features = [
+            "- Chat about various topics",
+            "- Check weather (try 'weather in London')",
+            "- Get current time (try 'what time is it')",
+            "- Get current date (try 'what is today's date')"
+        ]
+        
+        print("SimpleBot: Here are some things I can do:")
+        for feature in features:
+            print(f"SimpleBot: {feature}")
         
         while True:
             try:
