@@ -39,10 +39,14 @@ def main():
     # Display logo in the sidebar
     logo_path = "assets/amboss_logo.png"
     if os.path.exists(logo_path):
-        logo = Image.open(logo_path)
-        st.sidebar.image(logo, width=200)
+        try:
+            logo = Image.open(logo_path)
+            st.sidebar.image(logo, width=200)
+        except Exception as e:
+            st.sidebar.warning(f"Error loading logo: {str(e)}")
+            st.sidebar.info("Run create_logo.py to generate a placeholder logo")
     else:
-        st.sidebar.warning("Logo file not found. Please add the Amboss logo to assets/amboss_logo.png")
+        st.sidebar.warning("Logo file not found. Please run create_logo.py to generate a placeholder logo")
     
     st.title("LLM Chat Interface")
     
