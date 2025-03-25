@@ -1,6 +1,6 @@
 # LLM Test Application
 
-A simple command-line application for testing interactions with Anthropic's Claude AI models.
+A simple application for testing interactions with Anthropic's Claude AI models, available in both command-line and web UI versions.
 
 ## Setup
 
@@ -14,21 +14,17 @@ A simple command-line application for testing interactions with Anthropic's Clau
    ANTHROPIC_API_KEY=your_anthropic_api_key_here
    ```
 
-3. Run the application:
-   ```
-   llm-test
-   ```
-   
-   Or directly:
-   ```
-   python llm_test.py
-   ```
+## Command-Line Interface
 
-## Usage
+Run the CLI application:
+```
+llm-test
+```
 
-Enter prompts at the command line. The application will send your prompt to Claude and display the response.
-
-Type 'quit', 'exit', or 'q' to exit the application.
+Or directly:
+```
+python llm_test.py
+```
 
 ### Command Line Options
 
@@ -37,7 +33,7 @@ Type 'quit', 'exit', or 'q' to exit the application.
 - `--max-tokens`, `-t`: Set maximum tokens for response (default: 1000)
 - `--file`, `-f`: Use content from a file as the prompt
 
-### Examples
+### CLI Examples
 
 Use a specific system prompt:
 ```
@@ -53,3 +49,18 @@ Process a file:
 ```
 llm-test --file my_document.txt
 ```
+
+## Web Interface
+
+Run the Streamlit web interface:
+```
+streamlit run llm_ui.py
+```
+
+### Web UI Features
+
+- Chat-like interface for conversations with the LLM
+- Select different system prompts from the sidebar
+- View the content of the selected system prompt
+- Restart conversations with a single click
+- Persistent chat history during your session
