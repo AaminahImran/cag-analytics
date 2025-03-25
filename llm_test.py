@@ -4,17 +4,18 @@ A simple script to send a prompt to an LLM and display the response.
 """
 
 import os
+import os.path
 import sys
 import requests
 from dotenv import load_dotenv
 
-def call_llm(prompt, system_prompt="You are Claude, a helpful AI assistant. Provide clear, accurate, and concise responses."):
+def call_llm(prompt, system_prompt_path="./prompts/system_prompt.md"):
     """
     Send a prompt to an LLM API and return the response.
     
     Args:
         prompt (str): The user's input prompt
-        system_prompt (str): Instructions for the AI assistant
+        system_prompt_path (str): Path to the file containing system prompt
         
     Returns:
         str: The LLM's response
@@ -25,6 +26,18 @@ def call_llm(prompt, system_prompt="You are Claude, a helpful AI assistant. Prov
     
     if not api_key:
         return "Error: API key not found. Please set the ANTHROPIC_API_KEY environment variable."
+    
+    # Read system prompt from file
+    try:
+        if os.path.exists(system_prompt_path):
+            with open(system_prompt_path, 'r') as f:
+                system_prompt = f.read().strip()
+        else:
+            system_prompt = "You are Claude, a helpful AI assistant. Provide clear, accurate, and concise responses."
+            print(f"Warning: System prompt file not found at {system_prompt_path}. Using default.")
+    except Exception as e:
+        system_prompt = "You are Claude, a helpful AI assistant. Provide clear, accurate, and concise responses."
+        print(f"Error reading system prompt file: {str(e)}. Using default.")
     
     # Anthropic API endpoint
     url = "https://api.anthropic.com/v1/messages"
