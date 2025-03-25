@@ -16,3 +16,6 @@ dependencies = [
 
 [project.scripts]
 llm-test = "llm_test:main"
+
+[tool.uv]
+package = true
