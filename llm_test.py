@@ -15,12 +15,19 @@ def get_system_prompt(system_prompt_path="./prompts/system_prompt.md"):
     Read system prompt from file or use default if file not found.
     
     Args:
-        system_prompt_path (str): Path to the file containing system prompt
+        system_prompt_path (str): Path to the file containing system prompt or just the prompt name
         
     Returns:
         str: The system prompt to use
     """
     default_prompt = "You are Claude, a helpful AI assistant. Provide clear, accurate, and concise responses."
+    
+    # If only a prompt name is provided (without path or extension), construct the full path
+    if not os.path.dirname(system_prompt_path) and not system_prompt_path.endswith('.md'):
+        system_prompt_path = os.path.join("./prompts", f"{system_prompt_path}.md")
+    # If only a prompt name with extension is provided, construct the path
+    elif not os.path.dirname(system_prompt_path) and system_prompt_path.endswith('.md'):
+        system_prompt_path = os.path.join("./prompts", system_prompt_path)
     
     try:
         if os.path.exists(system_prompt_path):
@@ -88,8 +95,8 @@ def main():
     """
     parser = argparse.ArgumentParser(description="Send prompts to an LLM and display responses")
     parser.add_argument("--system-prompt", "-s", 
-                        default="./prompts/system_prompt.md",
-                        help="Path to system prompt file (default: ./prompts/system_prompt.md)")
+                        default="system_prompt",
+                        help="Name of the prompt file in ./prompts/ directory or full path to prompt file")
     args = parser.parse_args()
     
     print("LLM Test - Enter a prompt (or 'quit' to exit):")
