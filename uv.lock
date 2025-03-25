@@ -314,6 +314,21 @@ wheels = [
 ]
 
 [[package]]
+name = "google-cloud-bigquery-storage"
+version = "2.29.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "google-api-core", extra = ["grpc"] },
+    { name = "google-auth" },
+    { name = "proto-plus" },
+    { name = "protobuf" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/cb/0a/3eed64a1ccb01c9b65e65e50d0634b94841be851957add7fef8611260cbd/google_cloud_bigquery_storage-2.29.1.tar.gz", hash = "sha256:4b917a79d239eecaa738fa02ed942dbeb877ecc99f207d96fa02e8889ef2b64d", size = 255492 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/3a/3c/00ea23d2138f42da47378fcd540043c64aab3dc400d532442abab57de82b/google_cloud_bigquery_storage-2.29.1-py2.py3-none-any.whl", hash = "sha256:94e6ed2eb4015373f12c96c559044ba222625886e8525936188fc1b826010eb3", size = 256058 },
+]
+
+[[package]]
 name = "google-cloud-core"
 version = "2.4.3"
 source = { registry = "https://pypi.org/simple" }
@@ -726,6 +741,7 @@ source = { editable = "." }
 dependencies = [
     { name = "db-dtypes" },
     { name = "google-cloud-bigquery" },
+    { name = "google-cloud-bigquery-storage" },
     { name = "pandas", version = "2.0.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
     { name = "pandas", version = "2.2.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.9'" },
     { name = "pillow", version = "10.4.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
@@ -741,6 +757,7 @@ dependencies = [
 requires-dist = [
     { name = "db-dtypes", specifier = ">=1.1.1" },
     { name = "google-cloud-bigquery", specifier = ">=3.11.0" },
+    { name = "google-cloud-bigquery-storage", specifier = ">=2.19.0" },
     { name = "pandas", specifier = ">=2.0.0" },
     { name = "pillow", specifier = ">=9.0.0" },
     { name = "python-dotenv", specifier = ">=1.0.0" },
