@@ -8,12 +8,13 @@ import sys
 import requests
 from dotenv import load_dotenv
 
-def call_llm(prompt):
+def call_llm(prompt, system_prompt="You are Claude, a helpful AI assistant. Provide clear, accurate, and concise responses."):
     """
     Send a prompt to an LLM API and return the response.
     
     Args:
         prompt (str): The user's input prompt
+        system_prompt (str): Instructions for the AI assistant
         
     Returns:
         str: The LLM's response
@@ -39,7 +40,8 @@ def call_llm(prompt):
     data = {
         "model": "claude-3-opus-20240229",
         "messages": [{"role": "user", "content": prompt}],
-        "max_tokens": 1000
+        "max_tokens": 1000,
+        "system": system_prompt
     }
     
     try:
