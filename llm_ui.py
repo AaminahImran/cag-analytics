@@ -6,6 +6,7 @@ Streamlit UI for interacting with an LLM.
 import os
 import streamlit as st
 from llm_test import call_llm, get_system_prompt
+from PIL import Image
 
 def get_available_prompts():
     """
@@ -28,6 +29,21 @@ def main():
     """
     Main function to create the Streamlit UI.
     """
+    # Set page configuration
+    st.set_page_config(
+        page_title="Amboss LLM Chat",
+        page_icon="🤖",
+        layout="wide"
+    )
+    
+    # Display logo in the sidebar
+    logo_path = "assets/amboss_logo.png"
+    if os.path.exists(logo_path):
+        logo = Image.open(logo_path)
+        st.sidebar.image(logo, width=200)
+    else:
+        st.sidebar.warning("Logo file not found. Please add the Amboss logo to assets/amboss_logo.png")
+    
     st.title("LLM Chat Interface")
     
     # Initialize session state for chat history if it doesn't exist
@@ -79,6 +95,10 @@ def main():
             
             # Rerun to update the UI
             st.rerun()
+
+    # Add footer with Amboss branding
+    st.markdown("---")
+    st.markdown("<div style='text-align: center; color: gray;'>Powered by Amboss SE</div>", unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
