@@ -8,6 +8,7 @@ import os.path
 import sys
 import requests
 import argparse
+import json
 from dotenv import load_dotenv
 
 def get_system_prompt(system_prompt_path="./prompts/system_prompt.md"):
@@ -40,13 +41,15 @@ def get_system_prompt(system_prompt_path="./prompts/system_prompt.md"):
         print(f"Error reading system prompt file: {str(e)}. Using default.")
         return default_prompt
 
-def call_llm(prompt, system_prompt_path="./prompts/system_prompt.md"):
+def call_llm(prompt, system_prompt_path="./prompts/system_prompt.md", model="claude-3-7-sonnet-latest", max_tokens=1000):
     """
     Send a prompt to an LLM API and return the response.
     
     Args:
         prompt (str): The user's input prompt
         system_prompt_path (str): Path to the file containing system prompt
+        model (str): The Claude model to use
+        max_tokens (int): Maximum tokens for the response
         
     Returns:
         str: The LLM's response
@@ -73,9 +76,9 @@ def call_llm(prompt, system_prompt_path="./prompts/system_prompt.md"):
     
     # Request data
     data = {
-        "model": "claude-3-7-sonnet-latest",
+        "model": model,
         "messages": [{"role": "user", "content": prompt}],
-        "max_tokens": 1000,
+        "max_tokens": max_tokens,
         "system": system_prompt
     }
     
@@ -89,6 +92,22 @@ def call_llm(prompt, system_prompt_path="./prompts/system_prompt.md"):
     except requests.exceptions.RequestException as e:
         return f"Error calling LLM API: {str(e)}"
 
+def read_file_content(file_path):
+    """
+    Read content from a file.
+    
+    Args:
+        file_path (str): Path to the file
+        
+    Returns:
+        str: Content of the file
+    """
+    try:
+        with open(file_path, 'r') as f:
+            return f.read()
+    except Exception as e:
+        return f"Error reading file: {str(e)}"
+
 def main():
     """
     Main function to get user input and display LLM response.
@@ -97,7 +116,26 @@ def main():
     parser.add_argument("--system-prompt", "-s", 
                         default="system_prompt",
                         help="Name of the prompt file in ./prompts/ directory or full path to prompt file")
+    parser.add_argument("--model", "-m",
+                        default="claude-3-7-sonnet-latest",
+                        help="Claude model to use")
+    parser.add_argument("--max-tokens", "-t",
+                        type=int,
+                        default=1000,
+                        help="Maximum tokens for response")
+    parser.add_argument("--file", "-f",
+                        help="Use content from a file as the prompt")
     args = parser.parse_args()
+    
+    # If file is provided, use its content as the prompt
+    if args.file:
+        user_input = read_file_content(args.file)
+        print(f"Using content from file: {args.file}")
+        print("\nSending to LLM...")
+        response = call_llm(user_input, args.system_prompt, args.model, args.max_tokens)
+        print("\nLLM Response:")
+        print(response)
+        return
     
     print("LLM Test - Enter a prompt (or 'quit' to exit):")
     
@@ -112,7 +150,7 @@ def main():
         
         # Call LLM and print response
         print("\nSending to LLM...")
-        response = call_llm(user_input, args.system_prompt)
+        response = call_llm(user_input, args.system_prompt, args.model, args.max_tokens)
         print("\nLLM Response:")
         print(response)
         print()
