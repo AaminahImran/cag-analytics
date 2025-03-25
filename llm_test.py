@@ -66,7 +66,7 @@ def call_llm(prompt, system_prompt_path="./prompts/system_prompt.md"):
     
     # Request data
     data = {
-        "model": "claude-3-opus-20240229",
+        "model": "claude-3-7-sonnet-latest",
         "messages": [{"role": "user", "content": prompt}],
         "max_tokens": 1000,
         "system": system_prompt
