@@ -20,25 +20,26 @@ def call_llm(prompt):
     """
     # Load API key from environment variables
     load_dotenv()
-    api_key = os.getenv("OPENAI_API_KEY")
+    api_key = os.getenv("ANTHROPIC_API_KEY")
     
     if not api_key:
-        return "Error: API key not found. Please set the OPENAI_API_KEY environment variable."
+        return "Error: API key not found. Please set the ANTHROPIC_API_KEY environment variable."
     
-    # OpenAI API endpoint
-    url = "https://api.openai.com/v1/chat/completions"
+    # Anthropic API endpoint
+    url = "https://api.anthropic.com/v1/messages"
     
     # Request headers
     headers = {
         "Content-Type": "application/json",
-        "Authorization": f"Bearer {api_key}"
+        "x-api-key": api_key,
+        "anthropic-version": "2023-06-01"
     }
     
     # Request data
     data = {
-        "model": "gpt-3.5-turbo",
+        "model": "claude-3-opus-20240229",
         "messages": [{"role": "user", "content": prompt}],
-        "temperature": 0.7
+        "max_tokens": 1000
     }
     
     try:
@@ -46,7 +47,7 @@ def call_llm(prompt):
         response.raise_for_status()  # Raise exception for HTTP errors
         
         result = response.json()
-        return result["choices"][0]["message"]["content"]
+        return result["content"][0]["text"]
     
     except requests.exceptions.RequestException as e:
         return f"Error calling LLM API: {str(e)}"
