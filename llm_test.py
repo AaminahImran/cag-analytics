@@ -7,7 +7,31 @@ import os
 import os.path
 import sys
 import requests
+import argparse
 from dotenv import load_dotenv
+
+def get_system_prompt(system_prompt_path="./prompts/system_prompt.md"):
+    """
+    Read system prompt from file or use default if file not found.
+    
+    Args:
+        system_prompt_path (str): Path to the file containing system prompt
+        
+    Returns:
+        str: The system prompt to use
+    """
+    default_prompt = "You are Claude, a helpful AI assistant. Provide clear, accurate, and concise responses."
+    
+    try:
+        if os.path.exists(system_prompt_path):
+            with open(system_prompt_path, 'r') as f:
+                return f.read().strip()
+        else:
+            print(f"Warning: System prompt file not found at {system_prompt_path}. Using default.")
+            return default_prompt
+    except Exception as e:
+        print(f"Error reading system prompt file: {str(e)}. Using default.")
+        return default_prompt
 
 def call_llm(prompt, system_prompt_path="./prompts/system_prompt.md"):
     """
@@ -27,17 +51,8 @@ def call_llm(prompt, system_prompt_path="./prompts/system_prompt.md"):
     if not api_key:
         return "Error: API key not found. Please set the ANTHROPIC_API_KEY environment variable."
     
-    # Read system prompt from file
-    try:
-        if os.path.exists(system_prompt_path):
-            with open(system_prompt_path, 'r') as f:
-                system_prompt = f.read().strip()
-        else:
-            system_prompt = "You are Claude, a helpful AI assistant. Provide clear, accurate, and concise responses."
-            print(f"Warning: System prompt file not found at {system_prompt_path}. Using default.")
-    except Exception as e:
-        system_prompt = "You are Claude, a helpful AI assistant. Provide clear, accurate, and concise responses."
-        print(f"Error reading system prompt file: {str(e)}. Using default.")
+    # Get system prompt
+    system_prompt = get_system_prompt(system_prompt_path)
     
     # Anthropic API endpoint
     url = "https://api.anthropic.com/v1/messages"
@@ -71,6 +86,12 @@ def main():
     """
     Main function to get user input and display LLM response.
     """
+    parser = argparse.ArgumentParser(description="Send prompts to an LLM and display responses")
+    parser.add_argument("--system-prompt", "-s", 
+                        default="./prompts/system_prompt.md",
+                        help="Path to system prompt file (default: ./prompts/system_prompt.md)")
+    args = parser.parse_args()
+    
     print("LLM Test - Enter a prompt (or 'quit' to exit):")
     
     while True:
@@ -84,7 +105,7 @@ def main():
         
         # Call LLM and print response
         print("\nSending to LLM...")
-        response = call_llm(user_input)
+        response = call_llm(user_input, args.system_prompt)
         print("\nLLM Response:")
         print(response)
         print()
